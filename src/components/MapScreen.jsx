@@ -190,12 +190,14 @@ export default function MapScreen({ preselectIndex }) {
 
         {/* Paiement / Scan */}
         {selected && !connecting && showQR && (
-          <PaymentPage
-            heroSrc={safeAsset("../assets/background_pay.png")}
-            chargerSrc={safeAsset("../assets/revolt-charger.png")}
-            onStart={() => setShowQR("methods")}
-            onCancel={() => setShowQR(false)}
-          />
+          <div className="animate-[fadeIn_.25s_ease-out]">
+            <PaymentPage
+              heroSrc={safeAsset("../assets/background_pay.png")}
+              chargerSrc={safeAsset("../assets/revolt-charger.png")}
+              onStart={() => setShowQR("methods")}
+              onCancel={() => setShowQR(false)}
+            />
+          </div>
         )}
 
         {selected && showQR === "methods" && !showActivity && (

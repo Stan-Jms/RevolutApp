@@ -1,8 +1,15 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 export default function UserProfilePage({ onBack }) {
   return (
-    <div className="absolute inset-0 z-[1200] bg-white">
+    <motion.div
+      className="absolute inset-0 z-[1200] bg-white"
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 24 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+    >
       <div className="absolute top-0 left-0 right-0 h-16 flex items-center justify-between bg-[#D8B25E] text-white px-4">
         <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-white/10" aria-label="Retour">‹</button>
         <h1 className="font-semibold">Compte</h1>
@@ -78,7 +85,7 @@ export default function UserProfilePage({ onBack }) {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

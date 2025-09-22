@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Mail, Lock, Eye, EyeOff, Phone, CheckCircle } from "lucide-react";
 import HomeScreen from "./HomeScreen.jsx";
 import MapScreen from "./MapScreen.jsx";
@@ -48,31 +49,42 @@ export default function AppFlow() {
   return (
     <div className="w-full min-h-screen bg-neutral-900 flex items-center justify-center p-4">
       <div className="relative w-[393px] h-[852px] rounded-[28px] overflow-hidden bg-white shadow-2xl">
-        {id === "splash" && <SplashStep onNext={next} />}
-        {id === "welcome" && <WelcomeSimpleStep onNext={next} />}
-        {id === "login" && (
-          <LoginStep
-            onLogin={() => goto(flow.indexOf("home"))}
-            onOwnerLogin={() => { sessionStorage.setItem("ownerMode", "1"); setOwnerMode(true); goto(flow.indexOf("home")); }}
-            onGoSignUp={() => goto(flow.indexOf("role"))}
-          />
-        )}
-        {id === "role" && <RoleChoiceStep roles={roles} onNext={onRolesChosen} />}
-        {id === "vehicle" && <SignUpVehicleStep onNext={next} />}
-        {id === "address" && <SignUpAddressStep onNext={next} />}
-        {id === "credentials" && <SignUpCredentialsStep onBack={back} onNext={next} />}
-        {id === "success" && <SuccessStep onNext={next} />}
-        {id === "home" && (
-          ownerMode ? (
-            <OwnerFlow onBack={() => { sessionStorage.removeItem("ownerMode"); setOwnerMode(false); }} />
-          ) : (
-            <HomeScreen
-              onGoServices={() => goto(index + 1)}
-              onOpenChezRemi={() => goto(flow.indexOf("map"))}
-            />
-          )
-        )}
-        {id === "map" && <MapScreen preselectIndex={0} />}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={id}
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -24 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="absolute inset-0"
+          >
+            {id === "splash" && <SplashStep onNext={next} />}
+            {id === "welcome" && <WelcomeSimpleStep onNext={next} />}
+            {id === "login" && (
+              <LoginStep
+                onLogin={() => goto(flow.indexOf("home"))}
+                onOwnerLogin={() => { sessionStorage.setItem("ownerMode", "1"); setOwnerMode(true); goto(flow.indexOf("home")); }}
+                onGoSignUp={() => goto(flow.indexOf("role"))}
+              />
+            )}
+            {id === "role" && <RoleChoiceStep roles={roles} onNext={onRolesChosen} />}
+            {id === "vehicle" && <SignUpVehicleStep onNext={next} />}
+            {id === "address" && <SignUpAddressStep onNext={next} />}
+            {id === "credentials" && <SignUpCredentialsStep onBack={back} onNext={next} />}
+            {id === "success" && <SuccessStep onNext={next} />}
+            {id === "home" && (
+              ownerMode ? (
+                <OwnerFlow onBack={() => { sessionStorage.removeItem("ownerMode"); setOwnerMode(false); }} />
+              ) : (
+                <HomeScreen
+                  onGoServices={() => goto(index + 1)}
+                  onOpenChezRemi={() => goto(flow.indexOf("map"))}
+                />
+              )
+            )}
+            {id === "map" && <MapScreen preselectIndex={0} />}
+          </motion.div>
+        </AnimatePresence>
 
         {/* Barre gestuelle fictive (toutes étapes) */}
         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 h-1 w-36 rounded-full bg-neutral-900/80" />

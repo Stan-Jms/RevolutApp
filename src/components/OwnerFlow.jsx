@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Calendar as CalendarIcon, MapPin, Star, ChevronLeft, ChevronRight, QrCode, Phone, Plus, X, Power } from "lucide-react";
 
 const classNames = (...c) => c.filter(Boolean).join(" ");
@@ -268,22 +268,26 @@ export default function OwnerFlow({ onBack }) {
         )}
       </div>
 
-      <AdvisorModal
-        open={advisorOpen}
-        onClose={() => setAdvisorOpen(false)}
-        onConfirm={({ date, slot }) => {
-          setAdvisorOpen(false);
-          setTimeout(() => setSuccess(true), 200);
-          // eslint-disable-next-line no-console
-          console.log("Réservation:", formatDate(date), slot);
-        }}
-      />
+      <AnimatePresence>{advisorOpen && (
+        <AdvisorModal
+          open={advisorOpen}
+          onClose={() => setAdvisorOpen(false)}
+          onConfirm={({ date, slot }) => {
+            setAdvisorOpen(false);
+            setTimeout(() => setSuccess(true), 200);
+            // eslint-disable-next-line no-console
+            console.log("Réservation:", formatDate(date), slot);
+          }}
+        />
+      )}</AnimatePresence>
 
-      <SuccessDialog open={success} onClose={() => setSuccess(false)} />
+      <AnimatePresence>{success && (
+        <SuccessDialog open={success} onClose={() => setSuccess(false)} />
+      )}</AnimatePresence>
 
-      {showProfile && (
+      <AnimatePresence>{showProfile && (
         <OwnerProfilePage onBack={() => setShowProfile(false)} />
-      )}
+      )}</AnimatePresence>
     </div>
   );
 }
