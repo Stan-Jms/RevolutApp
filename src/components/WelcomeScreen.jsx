@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { ChevronLeft } from "lucide-react";
 import { ArrowRight, Mail, Lock, Eye, EyeOff, Phone, CheckCircle } from "lucide-react";
 import HomeScreen from "./HomeScreen.jsx";
 import MapScreen from "./MapScreen.jsx";
@@ -60,18 +61,19 @@ export default function AppFlow() {
           >
             {id === "splash" && <SplashStep onNext={next} />}
             {id === "welcome" && <WelcomeSimpleStep onNext={next} />}
-            {id === "login" && (
-              <LoginStep
-                onLogin={() => goto(flow.indexOf("home"))}
-                onOwnerLogin={() => { sessionStorage.setItem("ownerMode", "1"); setOwnerMode(true); goto(flow.indexOf("home")); }}
-                onGoSignUp={() => goto(flow.indexOf("role"))}
-              />
-            )}
-            {id === "role" && <RoleChoiceStep roles={roles} onNext={onRolesChosen} />}
-            {id === "vehicle" && <SignUpVehicleStep onNext={next} />}
-            {id === "address" && <SignUpAddressStep onNext={next} />}
-            {id === "credentials" && <SignUpCredentialsStep onBack={back} onNext={next} />}
-            {id === "success" && <SuccessStep onNext={next} />}
+        {id === "login" && (
+          <LoginStep
+            onBack={() => goto(flow.indexOf("welcome"))}
+            onLogin={() => goto(flow.indexOf("home"))}
+            onOwnerLogin={() => { sessionStorage.setItem("ownerMode", "1"); setOwnerMode(true); goto(flow.indexOf("home")); }}
+            onGoSignUp={() => goto(flow.indexOf("role"))}
+          />
+        )}
+        {id === "role" && <RoleChoiceStep roles={roles} onNext={onRolesChosen} onBack={() => goto(flow.indexOf("login"))} />}
+        {id === "vehicle" && <SignUpVehicleStep onNext={next} onBack={back} />}
+        {id === "address" && <SignUpAddressStep onNext={next} onBack={back} />}
+        {id === "credentials" && <SignUpCredentialsStep onBack={back} onNext={next} />}
+        {id === "success" && <SuccessStep onNext={next} />}
             {id === "home" && (
               ownerMode ? (
                 <OwnerFlow onBack={() => { sessionStorage.removeItem("ownerMode"); setOwnerMode(false); }} />
@@ -79,10 +81,11 @@ export default function AppFlow() {
                 <HomeScreen
                   onGoServices={() => goto(index + 1)}
                   onOpenChezRemi={() => goto(flow.indexOf("map"))}
+                  onLogout={() => goto(flow.indexOf("login"))}
                 />
               )
             )}
-            {id === "map" && <MapScreen preselectIndex={0} />}
+            {id === "map" && <MapScreen preselectIndex={0} onBack={() => goto(flow.indexOf("home"))} />}
           </motion.div>
         </AnimatePresence>
 
@@ -126,7 +129,7 @@ function WelcomeSimpleStep({ onNext }) {
 }
 
 // ÉTAPE 2 — CONNEXION
-function LoginStep({ onLogin, onGoSignUp }) {
+function LoginStep({ onBack, onLogin, onGoSignUp }) {
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
   const [showPwd, setShowPwd] = useState(false);
@@ -135,6 +138,9 @@ function LoginStep({ onLogin, onGoSignUp }) {
     <div className="absolute inset-0">
       <HeaderWave height={340} />
       <div className="relative px-6 pt-8 pb-24">
+        <button onClick={onBack} className="absolute left-4 top-4 p-2 rounded-full hover:bg-white/20 text-white" aria-label="Retour">
+          <ChevronLeft />
+        </button>
         <h1 className="text-[40px] leading-[42px] font-extrabold text-neutral-900">Connexion</h1>
         <div className="h-[4px] w-16 bg-[#D59C2F] rounded mt-3 mb-6" />
         <form onSubmit={(e) => { e.preventDefault(); if (!canSubmit) return; if (email.trim().toLowerCase() === "admin@mail.com") { const ownerIdx = 999; sessionStorage.setItem("ownerMode","1"); onLogin(() => ownerIdx); } else { onLogin(); } }}>
@@ -170,13 +176,16 @@ function LoginStep({ onLogin, onGoSignUp }) {
 }
 
 // ÉTAPE 3 — BIENVENUE : CHOIX DU RÔLE (modifiée)
-function RoleChoiceStep({ roles, onNext }) {
+function RoleChoiceStep({ roles, onNext, onBack }) {
   const [loc, setLoc] = useState(roles);
   const canContinue = loc.conducteur || loc.chargeur;
   return (
     <div className="absolute inset-0">
       <HeaderWave height={360} />
       <div className="relative px-6 pt-8 pb-28">
+        <button onClick={onBack} className="absolute left-4 top-4 p-2 rounded-full hover:bg-white/20 text-white" aria-label="Retour">
+          <ChevronLeft />
+        </button>
         <h1 className="text-[40px] leading-[42px] font-extrabold text-neutral-900">Bienvenue</h1>
         <div className="h-[4px] w-16 bg-[#D59C2F] rounded mt-3 mb-4" />
         <p className="text-[13px] leading-5 text-neutral-400 max-w-[320px]">Inscrivez-vous comme hôte et conducteur pour profiter pleinement.</p>
@@ -205,7 +214,7 @@ function RoleChoiceStep({ roles, onNext }) {
 }
 
 // ÉTAPE 4 — SIGNUP (Marque + Plaque)
-function SignUpVehicleStep({ onNext }) {
+function SignUpVehicleStep({ onNext, onBack }) {
   const [lastName, setLastName] = useState("");
   const [firstName, setFirstName] = useState("");
   const [carBrand, setCarBrand] = useState("");
@@ -215,6 +224,9 @@ function SignUpVehicleStep({ onNext }) {
     <div className="absolute inset-0">
       <HeaderWave height={300} />
       <div className="relative px-6 pt-6 pb-24">
+        <button onClick={onBack} className="absolute left-4 top-4 p-2 rounded-full hover:bg-white/20 text-white" aria-label="Retour">
+          <ChevronLeft />
+        </button>
         <h1 className="text-[40px] leading-[42px] font-extrabold text-neutral-900">Inscription</h1>
         <div className="h-[4px] w-16 bg-[#D59C2F] rounded mt-3 mb-4" />
         <form onSubmit={(e) => { e.preventDefault(); if (!canNext) return; onNext(); }}>
@@ -235,7 +247,7 @@ function SignUpVehicleStep({ onNext }) {
 }
 
 // ÉTAPE 5 — SIGNUP (Adresse + Type de borne)
-function SignUpAddressStep({ onNext }) {
+function SignUpAddressStep({ onNext, onBack }) {
   const [lastName, setLastName] = useState("");
   const [firstName, setFirstName] = useState("");
   const [address, setAddress] = useState("");
@@ -245,6 +257,9 @@ function SignUpAddressStep({ onNext }) {
     <div className="absolute inset-0">
       <HeaderWave height={300} />
       <div className="relative px-6 pt-6 pb-24">
+        <button onClick={onBack} className="absolute left-4 top-4 p-2 rounded-full hover:bg-white/20 text-white" aria-label="Retour">
+          <ChevronLeft />
+        </button>
         <h1 className="text-[40px] leading-[42px] font-extrabold text-neutral-900">Inscription</h1>
         <div className="h-[4px] w-16 bg-[#D59C2F] rounded mt-3 mb-4" />
         <form onSubmit={(e) => { e.preventDefault(); if (!canNext) return; onNext(); }}>

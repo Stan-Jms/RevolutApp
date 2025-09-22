@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-export default function UserProfilePage({ onBack }) {
+export default function UserProfilePage({ onBack, onLogout }) {
   return (
     <motion.div
       className="absolute inset-0 z-[1200] bg-white"
@@ -16,7 +16,7 @@ export default function UserProfilePage({ onBack }) {
         <span className="w-6" />
       </div>
 
-      <div className="absolute inset-x-0 top-16 bottom-0 overflow-y-auto px-5 py-6 pb-32" style={{ WebkitOverflowScrolling: 'touch' }}>
+      <div className="absolute inset-x-0 top-16 bottom-0 overflow-y-auto px-5 py-6 pb-24" style={{ WebkitOverflowScrolling: 'touch' }}>
         <div className="flex flex-col items-center">
           <div className="h-24 w-24 rounded-full overflow-hidden ring-4 ring-[#EED9A5]">
             <img src="https://i.pravatar.cc/200" alt="Profil" className="h-full w-full object-cover" />
@@ -83,6 +83,20 @@ export default function UserProfilePage({ onBack }) {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Déconnexion */}
+        <div className="mt-8 mb-4">
+          <button
+            onClick={() => {
+              try { sessionStorage.removeItem("ownerMode"); } catch {}
+              if (typeof onLogout === "function") onLogout();
+              else if (typeof onBack === "function") onBack();
+            }}
+            className="w-full h-12 rounded-2xl bg-[#F3E6C9] text-[#BA9A58] font-semibold shadow-inner hover:bg-[#EEDCB8] active:scale-[.99]"
+          >
+            Déconnexion
+          </button>
         </div>
       </div>
     </motion.div>

@@ -17,7 +17,7 @@ import {
 // ACCUEIL — avec carrousel IMAGES (sprite fournie)
 // Un seul composant exporté: HomeScreen
 
-export default function HomeScreen({ spriteUrl, onGoServices, onOpenChezRemi }) {
+export default function HomeScreen({ spriteUrl, onGoServices, onOpenChezRemi, onLogout }) {
   const [showProfile, setShowProfile] = React.useState(false);
   const stations = [
     { id: 1, name: "Chez Isma", time: "4 min en voiture", rating: 4.1 },
@@ -25,23 +25,26 @@ export default function HomeScreen({ spriteUrl, onGoServices, onOpenChezRemi }) 
     { id: 3, name: "Chez Theo", time: "8 min en voiture", rating: 4.2 },
   ];
 
-  let localSprite = "./promos-sprite.png";
+  // Panneaux (images fournies dans src/assets ou fallback public/)
+  let panel1 = "/revolt_panel1.png";
+  let panel2 = "/revolt_panel2.png";
+  let panel3 = "/revolt_panel3.png";
   try {
     // @ts-ignore
     // eslint-disable-next-line
-    localSprite = new URL("./promos-sprite.png", import.meta.url).href;
+    panel1 = new URL("../assets/revolt_panel1.png", import.meta.url).href;
+    // @ts-ignore
+    // eslint-disable-next-line
+    panel2 = new URL("../assets/revolt_panel2.png", import.meta.url).href;
+    // @ts-ignore
+    // eslint-disable-next-line
+    panel3 = new URL("../assets/revolt_panel3.png", import.meta.url).href;
   } catch {}
-  const sprite = spriteUrl || localSprite;
-
-  const promos = [
-    { id: 1, title: "Recharge partout", subtitle: "Trouvez une borne près de chez vous et rechargez facilement." },
-    { id: 2, title: "Investir dans l'avenir", subtitle: "Participez à la transition énergétique et gagnez des revenus." },
-    { id: 3, title: "Communauté & impact", subtitle: "Rejoignez une communauté qui accélère la mobilité durable." },
-  ];
+  const panels = [panel1, panel2, panel3];
 
   return (
     <div className="w-full min-h-screen bg-neutral-900 flex items-center justify-center p-4">
-      <div className="relative w-[393px] h-[852px] rounded-[28px] overflow-hidden bg-white shadow-2xl">
+      <div className="relative w-[393px] h-[852px] rounded-[28px] overflow-y-auto bg-white shadow-2xl">
         {/* Header */}
         <header className="px-5 pt-5 pb-3">
           <div className="flex items-center justify-between">
@@ -85,12 +88,12 @@ export default function HomeScreen({ spriteUrl, onGoServices, onOpenChezRemi }) 
           </div>
         </section>
 
-        {/* Carrousel promos — images réelles depuis la sprite */}
+        {/* Carrousel panneaux (emplacement d'origine du carrousel) */}
         <section className="mt-5 px-5">
-          <div className="grid grid-flow-col auto-cols-[72%] gap-3 overflow-x-auto pb-2 snap-x">
-            {promos.map((p, idx) => (
-              <PromoCard key={p.id} title={p.title} subtitle={p.subtitle} sprite={sprite} index={idx} />)
-            )}
+          <div className="grid grid-flow-col auto-cols-[64%] gap-0 overflow-x-auto pb-2 snap-x">
+            {panels.map((src, idx) => (
+              <PanelCard key={idx} src={src} />
+            ))}
           </div>
         </section>
 
@@ -102,7 +105,7 @@ export default function HomeScreen({ spriteUrl, onGoServices, onOpenChezRemi }) 
           </div>
           <button onClick={onOpenChezRemi} className="rounded-xl bg-neutral-50 p-3 flex items-center justify-between w-full text-left hover:bg-neutral-100">
             <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-lg bg-neutral-100 grid place-items-center">
+              <div className="h-6 w-8 rounded-lg bg-neutral-100 grid place-items-center">
                 <ReceiptText className="h-4 w-4 text-neutral-700" />
               </div>
               <div>
@@ -120,16 +123,10 @@ export default function HomeScreen({ spriteUrl, onGoServices, onOpenChezRemi }) 
           </button>
         </section>
 
-        {/* Tab bar (teinte sable) */}
-        <nav className="absolute bottom-0 left-0 right-0 h-16 bg-[#F2E3BF]/90 border-t border-neutral-200 grid grid-cols-4">
-          <Tab icon={<Home className="h-5 w-5" />} label="Accueil" active />
-          <Tab icon={<Wrench className="h-5 w-5" />} label="Services" onClick={onGoServices} />
-          <Tab icon={<Plug className="h-5 w-5" />} label="Ma borne" />
-          <Tab icon={<User className="h-5 w-5" />} label="Compte" />
-        </nav>
+        
 
         {/* Overlay: user profile */}
-        {showProfile && <UserProfilePage onBack={() => setShowProfile(false)} />}
+        {showProfile && <UserProfilePage onBack={() => setShowProfile(false)} onLogout={() => { setShowProfile(false); if (typeof onLogout === 'function') onLogout(); }} />}
 
         {/* Barre gestuelle fictive */}
         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 h-1 w-36 rounded-full bg-neutral-900/80" />
@@ -179,6 +176,14 @@ function PromoCard({ title, subtitle, sprite, index }) {
         <h4 className="text-[16px] font-extrabold text-[#083344] leading-5">{title}</h4>
         <p className="text-[12px] text-[#083344]/80 mt-2 leading-4 max-w-[85%]">{subtitle}</p>
       </div>
+    </article>
+  );
+}
+
+function PanelCard({ src }) {
+  return (
+    <article className="relative snap-center inline-block w-fit  h-auto overflow-hidden bg-transparent place-self-start">
+      <img src={src} alt="ReVOLT panel" className="block h-80 w-auto" />
     </article>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Search, SlidersHorizontal, Home, Wrench, Plug, User, ChevronRight, X, QrCode } from "lucide-react";
+import { Search, SlidersHorizontal, Home, Wrench, Plug, User, ChevronRight, X, QrCode, ChevronLeft } from "lucide-react";
 import PaymentPage from "./PaymentPage.jsx";
 import PaymentMethodsPage from "./PaymentMethodsPage.jsx";
 import ChargingActivityPage from "./ChargingActivityPage.jsx";
@@ -47,7 +47,7 @@ function safeAsset(relativePath) {
   }
 }
 
-export default function MapScreen({ preselectIndex }) {
+export default function MapScreen({ preselectIndex, onBack }) {
   const center = [48.853, 2.3478];
   // Point de départ souhaité: Châtelet–Les Halles
   const routeStart = [48.8609, 2.3469];
@@ -70,13 +70,13 @@ export default function MapScreen({ preselectIndex }) {
   const stations = useMemo(
     () => [
       { name: "Chez Rémi", distKm: 1.6, rating: 4.6, addr: "53 Rue Gustave Flaubert", price: 0.28 },
-      { name: "Chez Leïla", distKm: 0.8, rating: 4.4, addr: "12 Rue Oberkampf", price: 0.30 },
-      { name: "Chez Hugo", distKm: 2.1, rating: 4.2, addr: "8 Rue de Sèvres", price: 0.27 },
-      { name: "Chez Chloé", distKm: 1.2, rating: 4.5, addr: "3 Rue Tronchet", price: 0.32 },
-      { name: "Chez Amine", distKm: 3.4, rating: 4.0, addr: "Quai d'Austerlitz", price: 0.26 },
-      { name: "Chez Zoé", distKm: 1.9, rating: 4.7, addr: "21 Quai Saint-Michel", price: 0.29 },
-      { name: "Chez Marco", distKm: 2.6, rating: 4.1, addr: "Place Monge", price: 0.31 },
-      { name: "Chez Aya", distKm: 2.0, rating: 4.8, addr: "Place du Panthéon", price: 0.33 },
+      { name: "Chez Leïla", distKm: 0.8, rating: 4.4, addr: "12 Rue Oberkampf", price: 0.28 },
+      { name: "Chez Hugo", distKm: 2.1, rating: 4.2, addr: "8 Rue de Sèvres", price: 0.28 },
+      { name: "Chez Chloé", distKm: 1.2, rating: 4.5, addr: "3 Rue Tronchet", price: 0.28 },
+      { name: "Chez Amine", distKm: 3.4, rating: 4.0, addr: "Quai d'Austerlitz", price: 0.28 },
+      { name: "Chez Zoé", distKm: 1.9, rating: 4.7, addr: "21 Quai Saint-Michel", price: 0.28 },
+      { name: "Chez Marco", distKm: 2.6, rating: 4.1, addr: "Place Monge", price: 0.28 },
+      { name: "Chez Aya", distKm: 2.0, rating: 4.8, addr: "Place du Panthéon", price: 0.28 },
     ],
     []
   );
@@ -160,6 +160,9 @@ export default function MapScreen({ preselectIndex }) {
         </MapContainer>
 
         <div className="absolute top-4 left-4 right-4 flex items-center gap-2 z-50">
+          <button onClick={onBack} className="h-11 w-11 grid place-items-center rounded-xl bg-white/90 backdrop-blur shadow" aria-label="Retour">
+            <ChevronLeft className="h-4 w-4 text-neutral-700" />
+          </button>
           <div className="flex-1 flex items-center gap-2 bg-white/90 backdrop-blur rounded-xl px-3 h-11 shadow">
             <Search className="h-4 w-4 text-neutral-400" />
             <input placeholder="Trouver une borne" className="flex-1 bg-transparent outline-none text-[14px] placeholder:text-neutral-400" />
@@ -169,12 +172,7 @@ export default function MapScreen({ preselectIndex }) {
           </button>
         </div>
 
-        <nav className="absolute bottom-0 left-0 right-0 h-16 bg-[#F2E3BF]/90 border-t border-neutral-200 grid grid-cols-4 z-50">
-          <Tab icon={<Home className="h-5 w-5" />} label="Accueil" />
-          <Tab icon={<Wrench className="h-5 w-5" />} label="Services" active />
-          <Tab icon={<Plug className="h-5 w-5" />} label="Ma borne" />
-          <Tab icon={<User className="h-5 w-5" />} label="Compte" />
-        </nav>
+        
 
         {selected && !connecting && (
           <BottomSheet
